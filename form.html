@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Player Rating Prediction</title>
+    <!-- Bootstrap CSS -->
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.3/components/facts/fact-3/assets/css/fact-3.css" />
+
+    <style>
+        .card {
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .player-stat {
+            margin-top: 10px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            margin-right: 10px;
+            border-radius: 50%;
+            padding: 10px;
+            background-color: #FFD700;
+        }
+
+        .prediction-result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #FFD700;
+            border-radius: 8px;
+        }
+
+        .input-data {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group label {
+            flex-basis: 30%;
+        }
+
+        .form-group input {
+            flex-basis: 70%;
+        }
+
+        .btn {
+            background-color: #E5D283;
+        }
+
+        .btn:hover {
+            background-color: #E5D283;
+        }
+    </style>
+</head>
+
+<body style="background-color: #F0F0F0;" class="d-flex align-items-center justify-content-center min-vh-100 pr-4">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card p-5" style="background-color: #4F709C;">
+                    <h1 class="mb-5 text-center text-white">Player Rating Prediction</h1>
+                    <form action="/" method="post">
+                        <div class="form-group" style="display: none;">
+                            <label for="model">Choose a model:</label>
+                            <select class="form-control" name="model" required>
+                                <option value="Random Forest">Random Forest</option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="crossing">Crossing:</label>
+                            <input type="number" id="crossing" name="crossing" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="finishing">Finishing:</label>
+                            <input type="number" id="finishing" name="finishing" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="heading">Heading:</label>
+                            <input type="number" id="heading" name="heading" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="short_passing">Short Passing:</label>
+                            <input type="number" id="short_passing" name="short_passing" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="dribbling">Dribbling:</label>
+                            <input type="number" id="dribbling" name="dribbling" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="freekick">Freekick:</label>
+                            <input type="number" id="freekick" name="freekick" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="long_passing">Long Passing:</label>
+                            <input type="number" id="long_passing" name="long_passing" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="ball_control">Ball Control:</label>
+                            <input type="number" id="ball_control" name="ball_control" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="shot_power">Shot Power:</label>
+                            <input type="number" id="shot_power" name="shot_power" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="stamina">Stamina:</label>
+                            <input type="number" id="stamina" name="stamina" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="strength">Strength:</label>
+                            <input type="number" id="strength" name="strength" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="interceptions">Interceptions:</label>
+                            <input type="number" id="interceptions" name="interceptions" step="0.01" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="text-white" for="penalties">Penalties:</label>
+                            <input type="number" id="penalties" name="penalties" step="0.01" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary mt-3 text-black">Predict</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+            <div class="col-md-7">
+                <div class="card p-3" style="background-color: #213555;">
+                    <div class="flex flex-col mt-2 p-2">
+                        <div class="w-full mb-5 p-3" style="background-color: #E5D283; border-radius: 8px;">
+                            <h2 class="text-center">Player's Rating</h2>
+                            {% if prediction %}
+                            <h1 class="text-center">{{ prediction|custom_round }}</h1>
+                            {% endif %}
+                        </div>
+
+                        <div class="w-full text-white">
+                            <h2 class="text-center mb-3">Player Statistics Chart:</h2>
+                            <canvas id="playerChart" class="playerChart" style="width: 700px; height: 400px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script>
+        var ctx = document.getElementById('playerChart').getContext('2d');
+        var crossingValue = {{ request.form['crossing'] }};
+        var finishingValue = {{ request.form['finishing'] }};
+        var headingAccuracyValue = {{ request.form['heading'] }};
+        var shortPassingValue = {{ request.form['short_passing'] }};
+        var dribblingValue = {{ request.form['dribbling'] }};
+        var freekickValue = {{ request.form['freekick'] }};
+        var longPassingValue = {{ request.form['long_passing'] }};
+        var ballControlValue = {{ request.form['ball_control'] }};
+        var shotPowerValue = {{ request.form['shot_power'] }};
+        var staminaValue = {{ request.form['stamina'] }};
+        var strengthValue = {{ request.form['strength'] }};
+        var interceptionsValue = {{ request.form['interceptions'] }};
+        var penaltiesValue = {{ request.form['penalties'] }};
+
+        var playerChart = new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: ['Crossing', 'Finishing', 'Heading Accuracy', 'Short Passing', 'Dribbling', 'Freekick', 'Long Passing', 'Ball Control', 'Shot Power', 'Stamina', 'Strength', 'Interceptions', 'Penalties'],
+                datasets: [{
+                    data: [crossingValue, finishingValue, headingAccuracyValue, shortPassingValue, dribblingValue, freekickValue, longPassingValue, ballControlValue, shotPowerValue, staminaValue, strengthValue, interceptionsValue, penaltiesValue],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 205, 86, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(200, 99, 132, 0.7)',
+                        'rgba(75, 100, 192, 0.7)',
+                        'rgba(255, 50, 86, 0.7)',
+                        'rgba(54, 200, 235, 0.7)',
+                        'rgba(153, 50, 255, 0.7)',
+                        'rgba(255, 159, 100, 0.7)',
+                        'rgba(100, 99, 132, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                var label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed;
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
